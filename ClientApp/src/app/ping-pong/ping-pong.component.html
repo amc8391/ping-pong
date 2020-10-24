@@ -1,8 +1,11 @@
 <h1 id="tableLabel">Ping Pong</h1>
 
-<!-- <p>This component demonstrates fetching data from the server.</p> -->
+<p>This component communicating with the server via SignalR-powered websockets.</p>
 
-<!-- <p *ngIf="!forecasts"><em>Loading...</em></p> -->
+<p>Session ID: {{ sessionId || 'No active session' }}</p>
+
+<button [disabled]="getConnectionState() && getConnectionState() !== 'Disconnected'" (click)="startPingPong($event)">Start Ping Pong</button>
+<button [disabled]="getConnectionState() !== 'Connected'" (click)="stopPingPong($event)">Stop Ping Pong</button>
 
 <table class='table table-striped' aria-labelledby="tableLabel">
   <thead>
@@ -21,7 +24,4 @@
       <td>{{ message.date }}</td>
     </tr>
   </tbody>
-
-  <button [disabled]="getConnectionState() && getConnectionState() !== 'Disconnected'" (click)="startPingPong($event)">Start Ping Pong</button>
-  <button [disabled]="getConnectionState() !== 'Connected'" (click)="stopPingPong($event)">Stop Ping Pong</button>
 </table>

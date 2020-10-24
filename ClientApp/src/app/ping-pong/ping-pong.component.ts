@@ -13,55 +13,58 @@ export class PingPongComponent {
 
   private connection: signalR.HubConnection;
   private baseUrl: string;
+  private sessionId: string;
 
   constructor(@Inject('BASE_URL') baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
-  getMessages() {
+  getMessages() : any[] {
     return [
-      ...this.sentPings.map(msg => ({
-        ...msg,
-        source: 'You',
-        type: 'Ping'
-      })),
-      ...this.receivedPongs.map(msg => ({
-        ...msg,
-        source: `Server (${this.baseUrl})`,
-        type: 'Ping'
-      }))
+      ...this.sentPings.map(msg => ({ ...msg, source: 'You', type: 'Ping' })),
+      ...this.receivedPongs.map(msg => ({ ...msg, source: `Server (${this.baseUrl})`, type: 'Ping' }))
     ].sort((a, b) => a.messageId - b.messageId);
   }
 
-  handlePong(pong: PingPongMessage) {
+  handlePong(pong: PingPongMessage) : void {
     this.receivedPongs.push(pong);
+    if (this.sessionId !== pong.sessionId) {
+      this.sessionId = pong.sessionId;
+    }
     setTimeout(() => {
-      this.sendPing(pong.messageId + 1)
+      this.sendPing(this.getLastMessageId() + 1, pong.sessionId)
     }, PING_PONG_INTERVAL);
   }
 
-  startPingPong() {
+  getLastMessageId() : number {
+    return this.getMessages().slice(-1)[0] ? this.getMessages().slice(-1)[0].messageId : 0;
+  }
+
+  startPingPong() : void {
     this.connection = new signalR.HubConnectionBuilder().withUrl('/ping-pong').build();
     this.connection.on('pong', this.handlePong.bind(this));
     this.connection.start()
-      .then(() => this.sendPing(this.sentPings.length + this.receivedPongs.length + 1))
+      .then(() => {
+        this.sendPing(this.getLastMessageId() + 1, this.sessionId)
+      })
       .catch(err => console.error('Error starting connection with /ping-pong', err));
   }
 
-  sendPing(messageId) {
+  sendPing(messageId: number, sessionId: string) : void {
     const responsePing: PingPongMessage = {
       date: new Date().toISOString(),
-      messageId: messageId
+      messageId,
+      sessionId
     }
     this.sentPings.push(responsePing);
     this.connection.send('ping', responsePing);
   }
 
-  stopPingPong() {
+  stopPingPong() : void {
     this.connection.stop();
   }
 
-  getConnectionState() {
+  getConnectionState() : string {
     return this.connection && this.connection.state;
   }
 }
@@ -69,4 +72,5 @@ export class PingPongComponent {
 interface PingPongMessage {
   date: string;
   messageId: number;
+  sessionId: string;
 }

@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using pingpong.Hubs;
+using pingpong.Services;
+using pingpong.Utils;
+using pingpong.Repositories;
 
 namespace pingpong
 {
@@ -28,6 +31,10 @@ namespace pingpong
                 configuration.RootPath = "ClientApp/dist";
             });
             services.AddSignalR();
+            services.AddScoped<IPingPongService, PingPongService>();
+            services.AddScoped<ILogger, Logger>();
+            services.AddScoped<IDateUtils, DateUtils>();
+            services.AddScoped<IPingPongMessageRepository, PingPongMessageRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,23 +1,25 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
-using System.Threading;
 using pingpong.Models;
+using pingpong.Utils;
+using pingpong.Services;
 
 namespace pingpong.Hubs
 {
     public class PingPongHub : Hub
     {
-        private int PING_PONG_INTERVAL = 1000;
+        private IPingPongService _pingPongService;
+        private ILogger _logger;
+
+        public PingPongHub(IPingPongService pingPongService, ILogger logger) {
+            _pingPongService = pingPongService;
+            _logger = logger;
+        }
 
         public async Task Ping(PingPongMessage receivedPing)
         {
-            Thread.Sleep(PING_PONG_INTERVAL);
-
-            PingPongMessage pongResponse = new PingPongMessage();
-            pongResponse.date = System.DateTime.UtcNow.ToString();
-            pongResponse.messageId = receivedPing.messageId + 1;
-
-            await Clients.Caller.SendAsync("pong", pongResponse);
+            _logger.log("Incoming ping with Session ID: " + receivedPing.sessionId + " & Message ID " + receivedPing.messageId);
+            await _pingPongService.Ping(Clients, receivedPing);
         }
     }
 }

@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
+using System;
 
 namespace pingpong.Models
 {
@@ -7,5 +6,6 @@ namespace pingpong.Models
     {
         public string date { get; set; }
         public int messageId { get; set; }
+        public Guid sessionId { get; set; }
     }
 }
