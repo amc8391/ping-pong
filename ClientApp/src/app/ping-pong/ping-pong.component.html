@@ -1,0 +1,27 @@
+<h1 id="tableLabel">Ping Pong</h1>
+
+<!-- <p>This component demonstrates fetching data from the server.</p> -->
+
+<!-- <p *ngIf="!forecasts"><em>Loading...</em></p> -->
+
+<table class='table table-striped' aria-labelledby="tableLabel">
+  <thead>
+    <tr>
+      <th>Message ID</th>
+      <th>Type</th>
+      <th>Source</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let message of getMessages()">
+      <td>{{ message.messageId }}</td>
+      <td>{{ message.type }}</td>
+      <td>{{ message.source }}</td>
+      <td>{{ message.date }}</td>
+    </tr>
+  </tbody>
+
+  <button [disabled]="getConnectionState() && getConnectionState() !== 'Disconnected'" (click)="startPingPong($event)">Start Ping Pong</button>
+  <button [disabled]="getConnectionState() !== 'Connected'" (click)="stopPingPong($event)">Stop Ping Pong</button>
+</table>

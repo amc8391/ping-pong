@@ -1,6 +1,6 @@
 using System;
 
-namespace pingpong
+namespace pingpong.Models
 {
     public class WeatherForecast
     {
